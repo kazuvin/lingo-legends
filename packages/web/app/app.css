@@ -1,0 +1,131 @@
+@import 'tailwindcss';
+@import 'prismjs/themes/prism.css';
+
+@theme {
+  --font-sans:
+    'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
+
+  /** Color */
+  --color-background: oklch(99.5% 0.005 285);
+  --color-foreground: oklch(10% 0.002 285);
+  --color-card: oklch(100% 0 0);
+  --color-card-foreground: oklch(10% 0.002 285);
+  --color-popover: oklch(100% 0 0);
+  --color-popover-foreground: oklch(10% 0.002 285);
+  --color-primary: oklch(55% 0.224 280);
+  --color-primary-foreground: oklch(98% 0.013 285);
+  --color-secondary: oklch(96.1% 0.014 280);
+  --color-secondary-foreground: oklch(10% 0.002 285);
+  --color-muted: oklch(96.1% 0.014 280);
+  --color-muted-foreground: oklch(65.4% 0.014 285);
+  --color-accent: oklch(96.1% 0.014 264);
+  --color-accent-foreground: oklch(10% 0.002 285);
+  --color-destructive: oklch(55% 0.206 27);
+  --color-destructive-foreground: oklch(98% 0.013 285);
+  --color-border: oklch(94.5% 0.01 285);
+  --color-input: oklch(91.4% 0.011 285);
+  --color-ring: oklch(71.4% 0.011 285);
+  --color-chart-1: oklch(67.5% 0.15 34);
+  --color-chart-2: oklch(55.7% 0.097 194);
+  --color-chart-3: oklch(36.2% 0.033 258);
+  --color-chart-4: oklch(76.6% 0.122 91);
+  --color-chart-5: oklch(73.9% 0.155 53);
+
+  /** Animation */
+  --animate-fade-out: 0.2s ease fade-out;
+  --animate-fade-in: 0.2s ease fade-in;
+
+  /** keyframes */
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+}
+
+html,
+body {
+  @apply bg-background text-foreground dark:bg-gray-950;
+
+  @media (prefers-color-scheme: dark) {
+    color-scheme: dark;
+  }
+}
+
+/* Custom scrollbar styles */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(91.4% 0.011 264) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: oklch(91.4% 0.011 264 / 0.5);
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: oklch(71.4% 0.011 264 / 0.7);
+}
+
+.scrollbar-thin::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Hide scrollbars */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Dark mode scrollbar */
+@media (prefers-color-scheme: dark) {
+  .scrollbar-thin {
+    scrollbar-color: oklch(30% 0.01 264) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: oklch(30% 0.01 264 / 0.5);
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: oklch(40% 0.01 264 / 0.7);
+  }
+}
+
+/* PrismJS syntax highlighting overrides */
+code[class*='language-'] .token.punctuation,
+code[class*='language-'] .token.operator,
+code[class*='language-'] .token.property,
+code[class*='language-'] .token.string,
+code[class*='language-'] .token.number,
+code[class*='language-'] .token.keyword,
+code[class*='language-'] .token {
+  background: transparent !important;
+}
