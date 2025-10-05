@@ -5,9 +5,9 @@ import { drizzle } from "drizzle-orm/d1";
 import { wordsTable, synsetsTable, pointersTable } from "../db/schema";
 import {
   wordsQuerySchema,
+  type wordsResponse,
   type wordResponse,
-  type wordsRandomResponse,
-} from "../schemas";
+} from "@lingo-legends/shared";
 
 type Bindings = {
   DB: D1Database;
@@ -67,7 +67,10 @@ app.get(
         eq(pointersTable.targetSynsetOffset, wordsTable.synsetOffset),
       )
       .where(
-        sql`${pointersTable.sourceSynsetOffset} IN (${sql.join(synsetOffsets.map((offset) => sql`${offset}`), sql`, `)})`,
+        sql`${pointersTable.sourceSynsetOffset} IN (${sql.join(
+          synsetOffsets.map((offset) => sql`${offset}`),
+          sql`, `,
+        )})`,
       )
       .all();
 
@@ -97,7 +100,7 @@ app.get(
       ),
     }));
 
-    const response: wordsRandomResponse = {
+    const response: wordsResponse = {
       words: wordResponses,
       count: wordResponses.length,
     };

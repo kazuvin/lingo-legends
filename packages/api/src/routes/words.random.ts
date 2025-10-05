@@ -3,7 +3,10 @@ import { validator } from "hono/validator";
 import { sql, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { wordsTable, synsetsTable, pointersTable } from "../db/schema";
-import { wordsRandomQuerySchema, type wordsRandomResponse } from "../schemas";
+import {
+  wordsRandomQuerySchema,
+  type wordsRandomResponse,
+} from "@lingo-legends/shared";
 
 type Bindings = {
   DB: D1Database;

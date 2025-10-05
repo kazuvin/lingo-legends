@@ -108,16 +108,7 @@ export const wordsQuerySchema = z.object({
     .pipe(z.array(z.number().int()).min(1).max(100)),
 });
 
-export const wordsRandomQuerySchema = z.object({
-  count: z
-    .string()
-    .optional()
-    .default("10")
-    .transform(Number)
-    .pipe(z.number().int().min(1).max(100)),
-});
-
-export const wordsRandomResponseSchema = z.object({
+export const wordsResponseSchema = z.object({
   words: z.array(
     z.object({
       id: z.number().int(),
@@ -138,7 +129,19 @@ export const wordsRandomResponseSchema = z.object({
   count: z.number().int(),
 });
 
+export const wordsRandomQuerySchema = z.object({
+  count: z
+    .string()
+    .optional()
+    .default("10")
+    .transform(Number)
+    .pipe(z.number().int().min(1).max(100)),
+});
+
+export const wordsRandomResponseSchema = wordsResponseSchema;
+
 export type wordResponse = z.infer<typeof wordResponseSchema>;
 export type wordsQuery = z.infer<typeof wordsQuerySchema>;
+export type wordsResponse = z.infer<typeof wordsResponseSchema>;
 export type wordsRandomQuery = z.infer<typeof wordsRandomQuerySchema>;
 export type wordsRandomResponse = z.infer<typeof wordsRandomResponseSchema>;
