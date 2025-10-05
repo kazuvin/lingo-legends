@@ -1,0 +1,422 @@
+{
+  "version": "6",
+  "dialect": "sqlite",
+  "id": "90f3fd56-70ce-48ee-bfd4-32f033971561",
+  "prevId": "95e6ffbb-ed97-4967-a1b4-a9c7ea9b08c3",
+  "tables": {
+    "lex_file_types": {
+      "name": "lex_file_types",
+      "columns": {
+        "file_num": {
+          "name": "file_num",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "pointer_types": {
+      "name": "pointer_types",
+      "columns": {
+        "symbol": {
+          "name": "symbol",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "pointers": {
+      "name": "pointers",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "source_synset_offset": {
+          "name": "source_synset_offset",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "pointer_symbol": {
+          "name": "pointer_symbol",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "target_synset_offset": {
+          "name": "target_synset_offset",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "source_target": {
+          "name": "source_target",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "idx_pointers_source": {
+          "name": "idx_pointers_source",
+          "columns": [
+            "source_synset_offset",
+            "pointer_symbol"
+          ],
+          "isUnique": false
+        },
+        "idx_pointers_target": {
+          "name": "idx_pointers_target",
+          "columns": [
+            "target_synset_offset"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "pointers_source_synset_offset_synsets_synset_offset_fk": {
+          "name": "pointers_source_synset_offset_synsets_synset_offset_fk",
+          "tableFrom": "pointers",
+          "tableTo": "synsets",
+          "columnsFrom": [
+            "source_synset_offset"
+          ],
+          "columnsTo": [
+            "synset_offset"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "pointers_pointer_symbol_pointer_types_symbol_fk": {
+          "name": "pointers_pointer_symbol_pointer_types_symbol_fk",
+          "tableFrom": "pointers",
+          "tableTo": "pointer_types",
+          "columnsFrom": [
+            "pointer_symbol"
+          ],
+          "columnsTo": [
+            "symbol"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "pointers_target_synset_offset_synsets_synset_offset_fk": {
+          "name": "pointers_target_synset_offset_synsets_synset_offset_fk",
+          "tableFrom": "pointers",
+          "tableTo": "synsets",
+          "columnsFrom": [
+            "target_synset_offset"
+          ],
+          "columnsTo": [
+            "synset_offset"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "pos_types": {
+      "name": "pos_types",
+      "columns": {
+        "pos_code": {
+          "name": "pos_code",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "synsets": {
+      "name": "synsets",
+      "columns": {
+        "synset_offset": {
+          "name": "synset_offset",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "lex_file_num": {
+          "name": "lex_file_num",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "pos_code": {
+          "name": "pos_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "gloss": {
+          "name": "gloss",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "idx_synsets_pos": {
+          "name": "idx_synsets_pos",
+          "columns": [
+            "pos_code"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "synsets_lex_file_num_lex_file_types_file_num_fk": {
+          "name": "synsets_lex_file_num_lex_file_types_file_num_fk",
+          "tableFrom": "synsets",
+          "tableTo": "lex_file_types",
+          "columnsFrom": [
+            "lex_file_num"
+          ],
+          "columnsTo": [
+            "file_num"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "synsets_pos_code_pos_types_pos_code_fk": {
+          "name": "synsets_pos_code_pos_types_pos_code_fk",
+          "tableFrom": "synsets",
+          "tableTo": "pos_types",
+          "columnsFrom": [
+            "pos_code"
+          ],
+          "columnsTo": [
+            "pos_code"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "users": {
+      "name": "users",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "age": {
+          "name": "age",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "users_email_unique": {
+          "name": "users_email_unique",
+          "columns": [
+            "email"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "words": {
+      "name": "words",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "lemma": {
+          "name": "lemma",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "pos_code": {
+          "name": "pos_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "synset_offset": {
+          "name": "synset_offset",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "lex_id": {
+          "name": "lex_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        }
+      },
+      "indexes": {
+        "idx_words_lemma_pos": {
+          "name": "idx_words_lemma_pos",
+          "columns": [
+            "lemma",
+            "pos_code"
+          ],
+          "isUnique": false
+        },
+        "idx_words_synset": {
+          "name": "idx_words_synset",
+          "columns": [
+            "synset_offset"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "words_pos_code_pos_types_pos_code_fk": {
+          "name": "words_pos_code_pos_types_pos_code_fk",
+          "tableFrom": "words",
+          "tableTo": "pos_types",
+          "columnsFrom": [
+            "pos_code"
+          ],
+          "columnsTo": [
+            "pos_code"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "words_synset_offset_synsets_synset_offset_fk": {
+          "name": "words_synset_offset_synsets_synset_offset_fk",
+          "tableFrom": "words",
+          "tableTo": "synsets",
+          "columnsFrom": [
+            "synset_offset"
+          ],
+          "columnsTo": [
+            "synset_offset"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    }
+  },
+  "views": {},
+  "enums": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {
+      "\"users_table\"": "\"users\""
+    },
+    "columns": {}
+  },
+  "internal": {
+    "indexes": {}
+  }
+}

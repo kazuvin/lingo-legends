@@ -7,15 +7,21 @@
     "generate": "drizzle-kit generate",
     "migrate:local": "wrangler d1 migrations apply lingo-legends-db --local",
     "migrate:remote": "wrangler d1 migrations apply lingo-legends-db --remote",
+    "seed:wordnet": "tsx src/db/seed-wordnet.ts",
+    "dump:wordnet": "tsx src/db/dump-wordnet.ts",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings"
   },
   "dependencies": {
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.44.6",
-    "hono": "^4.9.9"
+    "drizzle-zod": "^0.8.3",
+    "hono": "^4.9.9",
+    "zod": "^4.1.9"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^22.17.2",
+    "better-sqlite3": "^12.4.1",
     "drizzle-kit": "^0.31.5",
     "tsx": "^4.20.6",
     "wrangler": "^4.4.0"

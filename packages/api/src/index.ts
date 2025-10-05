@@ -1,9 +1,11 @@
-import { Hono } from 'hono'
+import { Hono } from "hono";
 
-const app = new Hono()
+import words from "./routes/words";
+import wordsRandom from "./routes/words.random";
 
-app.get('/', (c) => {
-  return c.text('Hello Hono!')
-})
+const app = new Hono();
 
-export default app
+app.route("/words", words);
+app.route("/words/random", wordsRandom);
+
+export default app;
