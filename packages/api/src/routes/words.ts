@@ -1,14 +1,110 @@
 import { Hono } from "hono";
-import { sql, eq } from "drizzle-orm";
+import { validator } from "hono/validator";
+import { sql, eq, inArray } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { wordsTable, synsetsTable, pointersTable } from "../db/schema";
-import { type wordResponse } from "../schemas";
+import {
+  wordsQuerySchema,
+  type wordResponse,
+  type wordsRandomResponse,
+} from "../schemas";
 
 type Bindings = {
   DB: D1Database;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
+
+app.get(
+  "/",
+  validator("query", (value, c) => {
+    const result = wordsQuerySchema.safeParse(value);
+    if (!result.success) {
+      return c.json({ error: result.error.issues }, 400);
+    }
+    return result.data;
+  }),
+  async (c) => {
+    const { ids } = c.req.valid("query");
+
+    const db = drizzle(c.env.DB);
+
+    // 1. 単語とsynset情報を一度に取得
+    const words = await db
+      .select({
+        id: wordsTable.id,
+        lemma: wordsTable.lemma,
+        synsetOffset: wordsTable.synsetOffset,
+        posCode: wordsTable.posCode,
+        gloss: synsetsTable.gloss,
+        lexFileNum: synsetsTable.lexFileNum,
+      })
+      .from(wordsTable)
+      .innerJoin(
+        synsetsTable,
+        eq(wordsTable.synsetOffset, synsetsTable.synsetOffset),
+      )
+      .where(inArray(wordsTable.id, ids))
+      .all();
+
+    if (words.length === 0) {
+      return c.json({ words: [], count: 0 });
+    }
+
+    // 2. 全ての関連語を一度に取得
+    const synsetOffsets = words.map((w) => w.synsetOffset);
+    const allRelations = await db
+      .select({
+        sourceSynsetOffset: pointersTable.sourceSynsetOffset,
+        targetId: wordsTable.id,
+        targetLemma: wordsTable.lemma,
+        pointerSymbol: pointersTable.pointerSymbol,
+        sourceTarget: pointersTable.sourceTarget,
+      })
+      .from(pointersTable)
+      .innerJoin(
+        wordsTable,
+        eq(pointersTable.targetSynsetOffset, wordsTable.synsetOffset),
+      )
+      .where(
+        sql`${pointersTable.sourceSynsetOffset} IN (${sql.join(synsetOffsets.map((offset) => sql`${offset}`), sql`, `)})`,
+      )
+      .all();
+
+    // 3. メモリ上でグループ化
+    const relationsByOffset = new Map<string, typeof allRelations>();
+    for (const rel of allRelations) {
+      if (!relationsByOffset.has(rel.sourceSynsetOffset)) {
+        relationsByOffset.set(rel.sourceSynsetOffset, []);
+      }
+      relationsByOffset.get(rel.sourceSynsetOffset)!.push(rel);
+    }
+
+    // 4. レスポンス構築
+    const wordResponses = words.map((word) => ({
+      id: word.id,
+      lemma: word.lemma,
+      gloss: word.gloss || "",
+      posCode: word.posCode as any,
+      lexFileNum: word.lexFileNum as any,
+      relations: (relationsByOffset.get(word.synsetOffset) || []).map(
+        (rel) => ({
+          id: rel.targetId,
+          lemma: rel.targetLemma,
+          pointerSymbol: rel.pointerSymbol as any,
+          sourceTarget: rel.sourceTarget || "",
+        }),
+      ),
+    }));
+
+    const response: wordsRandomResponse = {
+      words: wordResponses,
+      count: wordResponses.length,
+    };
+
+    return c.json(response);
+  },
+);
 
 app.get("/:id", async (c) => {
   const id = parseInt(c.req.param("id"));
