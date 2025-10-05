@@ -1,0 +1,38 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "lingo-legends-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-10-04",
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "PROJECT_ID": "lingo-legends",
+    "PUBLIC_JWK_CACHE_KEY": "public-jwk-cache",
+  },
+  "kv_namespaces": [
+    {
+      "binding": "PUBLIC_JWK_CACHE_KV",
+      "id": "ead4b9155e644544af8fae6d699d7820",
+    },
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "lingo-legends-db",
+      "database_id": "28407720-d30b-44f5-8aed-fdb6827a6f28",
+      "migrations_dir": "drizzle",
+    },
+  ],
+  // "r2_buckets": [
+  //   {
+  //     "binding": "MY_BUCKET",
+  //     "bucket_name": "my-bucket"
+  //   }
+  // ],
+  // "ai": {
+  //   "binding": "AI"
+  // },
+  // "observability": {
+  //   "enabled": true,
+  //   "head_sampling_rate": 1
+  // }
+}
