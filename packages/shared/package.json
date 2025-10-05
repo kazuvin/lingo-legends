@@ -2,6 +2,10 @@
   "name": "@lingo-legends/shared",
   "version": "0.0.1",
   "type": "module",
+  "scripts": {
+    "typespec:compile": "tsp compile typespec",
+    "typespec:watch": "tsp compile typespec --watch"
+  },
   "exports": {
     ".": "./src/index.ts",
     "./schemas": "./src/schemas/index.ts"
@@ -10,6 +14,11 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@typespec/compiler": "^1.4.0",
+    "@typespec/http": "^1.4.0",
+    "@typespec/openapi3": "^1.4.0",
+    "@typespec/rest": "^0.74.0",
+    "@typespec/versioning": "^0.74.0",
     "typescript": "^5.7.3"
   }
 }
