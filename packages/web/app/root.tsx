@@ -1,9 +1,12 @@
 import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
 
 import type { Route } from './+types/root';
 import './app.css';
 import './lib/i18n';
+
+const queryClient = new QueryClient();
 
 /* eslint react-refresh/only-export-components: 0 */
 export const links: Route.LinksFunction = () => [
@@ -39,7 +42,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Outlet />
+    </QueryClientProvider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

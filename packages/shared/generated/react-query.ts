@@ -17,9 +17,8 @@ import type {
   UseQueryResult,
 } from "@tanstack/react-query";
 
-import axios from "axios";
-import type { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
-
+import { customInstance } from "../mutator/custom-instance";
+import type { ErrorType } from "../mutator/custom-instance";
 export type LexFileNum = (typeof LexFileNum)[keyof typeof LexFileNum];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -150,14 +149,17 @@ export type WordsGetRandomParams = {
   count?: string;
 };
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
 export const wordsGetWords = (
   params: WordsGetWordsParams,
-  options?: AxiosRequestConfig,
-): Promise<AxiosResponse<WordsResponse>> => {
-  return axios.get(`/words`, {
-    ...options,
-    params: { ...params, ...options?.params },
-  });
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal,
+) => {
+  return customInstance<WordsResponse>(
+    { url: `/words`, method: "GET", params, signal },
+    options,
+  );
 };
 
 export const getWordsGetWordsQueryKey = (params?: WordsGetWordsParams) => {
@@ -166,23 +168,23 @@ export const getWordsGetWordsQueryKey = (params?: WordsGetWordsParams) => {
 
 export const getWordsGetWordsQueryOptions = <
   TData = Awaited<ReturnType<typeof wordsGetWords>>,
-  TError = AxiosError<unknown>,
+  TError = ErrorType<unknown>,
 >(
   params: WordsGetWordsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof wordsGetWords>>, TError, TData>
     >;
-    axios?: AxiosRequestConfig;
+    request?: SecondParameter<typeof customInstance>;
   },
 ) => {
-  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getWordsGetWordsQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof wordsGetWords>>> = ({
     signal,
-  }) => wordsGetWords(params, { signal, ...axiosOptions });
+  }) => wordsGetWords(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof wordsGetWords>>,
@@ -194,11 +196,11 @@ export const getWordsGetWordsQueryOptions = <
 export type WordsGetWordsQueryResult = NonNullable<
   Awaited<ReturnType<typeof wordsGetWords>>
 >;
-export type WordsGetWordsQueryError = AxiosError<unknown>;
+export type WordsGetWordsQueryError = ErrorType<unknown>;
 
 export function useWordsGetWords<
   TData = Awaited<ReturnType<typeof wordsGetWords>>,
-  TError = AxiosError<unknown>,
+  TError = ErrorType<unknown>,
 >(
   params: WordsGetWordsParams,
   options: {
@@ -213,7 +215,7 @@ export function useWordsGetWords<
         >,
         "initialData"
       >;
-    axios?: AxiosRequestConfig;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -221,7 +223,7 @@ export function useWordsGetWords<
 };
 export function useWordsGetWords<
   TData = Awaited<ReturnType<typeof wordsGetWords>>,
-  TError = AxiosError<unknown>,
+  TError = ErrorType<unknown>,
 >(
   params: WordsGetWordsParams,
   options?: {
@@ -236,7 +238,7 @@ export function useWordsGetWords<
         >,
         "initialData"
       >;
-    axios?: AxiosRequestConfig;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -244,14 +246,14 @@ export function useWordsGetWords<
 };
 export function useWordsGetWords<
   TData = Awaited<ReturnType<typeof wordsGetWords>>,
-  TError = AxiosError<unknown>,
+  TError = ErrorType<unknown>,
 >(
   params: WordsGetWordsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof wordsGetWords>>, TError, TData>
     >;
-    axios?: AxiosRequestConfig;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -260,14 +262,14 @@ export function useWordsGetWords<
 
 export function useWordsGetWords<
   TData = Awaited<ReturnType<typeof wordsGetWords>>,
-  TError = AxiosError<unknown>,
+  TError = ErrorType<unknown>,
 >(
   params: WordsGetWordsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof wordsGetWords>>, TError, TData>
     >;
-    axios?: AxiosRequestConfig;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -287,12 +289,13 @@ export function useWordsGetWords<
 
 export const wordsGetRandom = (
   params?: WordsGetRandomParams,
-  options?: AxiosRequestConfig,
-): Promise<AxiosResponse<WordsResponse>> => {
-  return axios.get(`/words/random`, {
-    ...options,
-    params: { ...params, ...options?.params },
-  });
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal,
+) => {
+  return customInstance<WordsResponse>(
+    { url: `/words/random`, method: "GET", params, signal },
+    options,
+  );
 };
 
 export const getWordsGetRandomQueryKey = (params?: WordsGetRandomParams) => {
@@ -301,23 +304,23 @@ export const getWordsGetRandomQueryKey = (params?: WordsGetRandomParams) => {
 
 export const getWordsGetRandomQueryOptions = <
   TData = Awaited<ReturnType<typeof wordsGetRandom>>,
-  TError = AxiosError<unknown>,
+  TError = ErrorType<unknown>,
 >(
   params?: WordsGetRandomParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof wordsGetRandom>>, TError, TData>
     >;
-    axios?: AxiosRequestConfig;
+    request?: SecondParameter<typeof customInstance>;
   },
 ) => {
-  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getWordsGetRandomQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof wordsGetRandom>>> = ({
     signal,
-  }) => wordsGetRandom(params, { signal, ...axiosOptions });
+  }) => wordsGetRandom(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof wordsGetRandom>>,
@@ -329,11 +332,11 @@ export const getWordsGetRandomQueryOptions = <
 export type WordsGetRandomQueryResult = NonNullable<
   Awaited<ReturnType<typeof wordsGetRandom>>
 >;
-export type WordsGetRandomQueryError = AxiosError<unknown>;
+export type WordsGetRandomQueryError = ErrorType<unknown>;
 
 export function useWordsGetRandom<
   TData = Awaited<ReturnType<typeof wordsGetRandom>>,
-  TError = AxiosError<unknown>,
+  TError = ErrorType<unknown>,
 >(
   params: undefined | WordsGetRandomParams,
   options: {
@@ -348,7 +351,7 @@ export function useWordsGetRandom<
         >,
         "initialData"
       >;
-    axios?: AxiosRequestConfig;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
@@ -356,7 +359,7 @@ export function useWordsGetRandom<
 };
 export function useWordsGetRandom<
   TData = Awaited<ReturnType<typeof wordsGetRandom>>,
-  TError = AxiosError<unknown>,
+  TError = ErrorType<unknown>,
 >(
   params?: WordsGetRandomParams,
   options?: {
@@ -371,7 +374,7 @@ export function useWordsGetRandom<
         >,
         "initialData"
       >;
-    axios?: AxiosRequestConfig;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -379,14 +382,14 @@ export function useWordsGetRandom<
 };
 export function useWordsGetRandom<
   TData = Awaited<ReturnType<typeof wordsGetRandom>>,
-  TError = AxiosError<unknown>,
+  TError = ErrorType<unknown>,
 >(
   params?: WordsGetRandomParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof wordsGetRandom>>, TError, TData>
     >;
-    axios?: AxiosRequestConfig;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
@@ -395,14 +398,14 @@ export function useWordsGetRandom<
 
 export function useWordsGetRandom<
   TData = Awaited<ReturnType<typeof wordsGetRandom>>,
-  TError = AxiosError<unknown>,
+  TError = ErrorType<unknown>,
 >(
   params?: WordsGetRandomParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof wordsGetRandom>>, TError, TData>
     >;
-    axios?: AxiosRequestConfig;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {

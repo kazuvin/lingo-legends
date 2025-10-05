@@ -11,6 +11,12 @@ export default defineConfig({
       mode: "single",
       clean: true,
       prettier: true,
+      override: {
+        mutator: {
+          path: "./mutator/custom-instance.ts",
+          name: "customInstance",
+        },
+      },
     },
   },
   axios: {
@@ -23,6 +29,12 @@ export default defineConfig({
       mode: "single",
       clean: false,
       prettier: true,
+      override: {
+        mutator: {
+          path: "./mutator/custom-instance.ts",
+          name: "customInstance",
+        },
+      },
     },
   },
   zod: {

@@ -4,9 +4,7 @@
  * Lingo Legends API
  * OpenAPI spec version: v1
  */
-import axios from "axios";
-import type { AxiosRequestConfig, AxiosResponse } from "axios";
-
+import { customInstance } from "../mutator/custom-instance";
 export type LexFileNum = (typeof LexFileNum)[keyof typeof LexFileNum];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -137,28 +135,34 @@ export type WordsGetRandomParams = {
   count?: string;
 };
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
 export const getLingoLegendsAPI = () => {
-  const wordsGetWords = <TData = AxiosResponse<WordsResponse>>(
+  const wordsGetWords = (
     params: WordsGetWordsParams,
-    options?: AxiosRequestConfig,
-  ): Promise<TData> => {
-    return axios.get(`/words`, {
-      ...options,
-      params: { ...params, ...options?.params },
-    });
+    options?: SecondParameter<typeof customInstance<WordsResponse>>,
+  ) => {
+    return customInstance<WordsResponse>(
+      { url: `/words`, method: "GET", params },
+      options,
+    );
   };
 
-  const wordsGetRandom = <TData = AxiosResponse<WordsResponse>>(
+  const wordsGetRandom = (
     params?: WordsGetRandomParams,
-    options?: AxiosRequestConfig,
-  ): Promise<TData> => {
-    return axios.get(`/words/random`, {
-      ...options,
-      params: { ...params, ...options?.params },
-    });
+    options?: SecondParameter<typeof customInstance<WordsResponse>>,
+  ) => {
+    return customInstance<WordsResponse>(
+      { url: `/words/random`, method: "GET", params },
+      options,
+    );
   };
 
   return { wordsGetWords, wordsGetRandom };
 };
-export type WordsGetWordsResult = AxiosResponse<WordsResponse>;
-export type WordsGetRandomResult = AxiosResponse<WordsResponse>;
+export type WordsGetWordsResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getLingoLegendsAPI>["wordsGetWords"]>>
+>;
+export type WordsGetRandomResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getLingoLegendsAPI>["wordsGetRandom"]>>
+>;
