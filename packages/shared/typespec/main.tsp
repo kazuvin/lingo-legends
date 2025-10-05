@@ -103,7 +103,7 @@ enum PointerSymbol {
   MemberOfThisDomainTopic: "-c",
   MemberOfThisDomainRegion: "-r",
   MemberOfThisDomainUsage: "-u",
-  DerivedFromAdjective: "\\",
+  DerivedFromAdjective: "\\\\",
 }
 
 // Word Relation Model

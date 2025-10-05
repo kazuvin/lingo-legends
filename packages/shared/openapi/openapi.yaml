@@ -116,7 +116,7 @@ components:
         - -c
         - -r
         - -u
-        - \
+        - \\
     PosCode:
       type: string
       enum:

@@ -4,10 +4,10 @@ import { sql, eq, inArray } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { wordsTable, synsetsTable, pointersTable } from "../db/schema";
 import {
-  wordsQuerySchema,
-  type wordsResponse,
-  type wordResponse,
-} from "@lingo-legends/shared";
+  wordsGetWordsQueryParams,
+  wordsGetWordsResponse,
+} from "@lingo-legends/shared/generated/zod";
+import type { z } from "zod";
 
 type Bindings = {
   DB: D1Database;
@@ -15,14 +15,19 @@ type Bindings = {
 
 const app = new Hono<{ Bindings: Bindings }>();
 
+type WordsQuery = z.infer<typeof wordsGetWordsQueryParams>;
+type WordsResponse = z.infer<typeof wordsGetWordsResponse>;
+
 app.get(
   "/",
   validator("query", (value, c) => {
-    const result = wordsQuerySchema.safeParse(value);
+    const result = wordsGetWordsQueryParams.safeParse(value);
     if (!result.success) {
       return c.json({ error: result.error.issues }, 400);
     }
-    return result.data;
+    // ids を配列に変換
+    const ids = result.data.ids.split(",").map(Number);
+    return { ids };
   }),
   async (c) => {
     const { ids } = c.req.valid("query");
@@ -100,7 +105,7 @@ app.get(
       ),
     }));
 
-    const response: wordsResponse = {
+    const response: WordsResponse = {
       words: wordResponses,
       count: wordResponses.length,
     };
@@ -156,7 +161,7 @@ app.get("/:id", async (c) => {
     .where(eq(pointersTable.sourceSynsetOffset, word.synsetOffset))
     .all();
 
-  const response: wordResponse = {
+  const response = {
     id: word.id,
     lemma: word.lemma,
     gloss: word.gloss || "",

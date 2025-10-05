@@ -4,9 +4,10 @@ import { sql, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { wordsTable, synsetsTable, pointersTable } from "../db/schema";
 import {
-  wordsRandomQuerySchema,
-  type wordsRandomResponse,
-} from "@lingo-legends/shared";
+  wordsGetRandomQueryParams,
+  wordsGetRandomResponse,
+} from "@lingo-legends/shared/generated/zod";
+import type { z } from "zod";
 
 type Bindings = {
   DB: D1Database;
@@ -14,14 +15,19 @@ type Bindings = {
 
 const app = new Hono<{ Bindings: Bindings }>();
 
+type RandomQuery = z.infer<typeof wordsGetRandomQueryParams>;
+type RandomResponse = z.infer<typeof wordsGetRandomResponse>;
+
 app.get(
   "/",
   validator("query", (value, c) => {
-    const result = wordsRandomQuerySchema.safeParse(value);
+    const result = wordsGetRandomQueryParams.safeParse(value);
     if (!result.success) {
       return c.json({ error: result.error.issues }, 400);
     }
-    return result.data;
+    // count を数値に変換（デフォルト10）
+    const count = result.data.count ? Number(result.data.count) : 10;
+    return { count };
   }),
   async (c) => {
     const { count } = c.req.valid("query");
@@ -65,7 +71,12 @@ app.get(
         wordsTable,
         eq(pointersTable.targetSynsetOffset, wordsTable.synsetOffset),
       )
-      .where(sql`${pointersTable.sourceSynsetOffset} IN (${sql.join(synsetOffsets.map((offset) => sql`${offset}`), sql`, `)})`)
+      .where(
+        sql`${pointersTable.sourceSynsetOffset} IN (${sql.join(
+          synsetOffsets.map((offset) => sql`${offset}`),
+          sql`, `,
+        )})`,
+      )
       .all();
 
     // 3. メモリ上でグループ化
@@ -84,15 +95,17 @@ app.get(
       gloss: word.gloss || "",
       posCode: word.posCode as any,
       lexFileNum: word.lexFileNum as any,
-      relations: (relationsByOffset.get(word.synsetOffset) || []).map((rel) => ({
-        id: rel.targetId,
-        lemma: rel.targetLemma,
-        pointerSymbol: rel.pointerSymbol as any,
-        sourceTarget: rel.sourceTarget || "",
-      })),
+      relations: (relationsByOffset.get(word.synsetOffset) || []).map(
+        (rel) => ({
+          id: rel.targetId,
+          lemma: rel.targetLemma,
+          pointerSymbol: rel.pointerSymbol as any,
+          sourceTarget: rel.sourceTarget || "",
+        }),
+      ),
     }));
 
-    const response: wordsRandomResponse = {
+    const response: RandomResponse = {
       words,
       count: words.length,
     };
