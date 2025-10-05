@@ -85,6 +85,22 @@ export const POINTER_SYMBOLS = {
   DerivedFromAdjective: "\\",
 };
 
+export const wordResponseSchema = z.object({
+  id: z.number().int(),
+  lemma: z.string(),
+  gloss: z.string(),
+  posCode: z.enum(POS_CODES),
+  lexFileNum: z.enum(LEX_FILE_NUMBERS),
+  relations: z.array(
+    z.object({
+      id: z.number().int(),
+      lemma: z.string(),
+      pointerSymbol: z.enum(POINTER_SYMBOLS),
+      sourceTarget: z.string(),
+    }),
+  ),
+});
+
 export const wordsRandomQuerySchema = z.object({
   count: z
     .string()
@@ -115,5 +131,6 @@ export const wordsRandomResponseSchema = z.object({
   count: z.number().int(),
 });
 
+export type wordResponse = z.infer<typeof wordResponseSchema>;
 export type wordsRandomQuery = z.infer<typeof wordsRandomQuerySchema>;
 export type wordsRandomResponse = z.infer<typeof wordsRandomResponseSchema>;
