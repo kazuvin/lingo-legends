@@ -1,25 +1,20 @@
 import { useWordsGetRandom } from '@lingo-legends/shared/generated/react-query';
+import { LegendCard } from '~/components/game/legend-card';
 
 export default function Dashboard() {
   const { data, isLoading, error } = useWordsGetRandom({
-    count: '5',
+    count: '12',
   });
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return null;
   if (error) return <div>Error: {error.message}</div>;
 
   return (
-    <div>
-      <h1>Dashboard - Random Words</h1>
-      <div>
-        <p>Count: {data?.count}</p>
-        <ul>
-          {data?.words.map((word) => (
-            <li key={word.id}>
-              <strong>{word.lemma}</strong> ({word.posCode}) - {word.gloss}
-            </li>
-          ))}
-        </ul>
+    <div className="p-6 lg:px-8">
+      <div className="grid grid-cols-6 gap-4">
+        {(data?.words || []).map((word) => (
+          <LegendCard key={word.id} word={word} />
+        ))}
       </div>
     </div>
   );
