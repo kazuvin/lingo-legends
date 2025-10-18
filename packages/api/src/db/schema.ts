@@ -105,3 +105,25 @@ export const selectWordSchema = createSelectSchema(wordsTable);
 
 export const insertPointerSchema = createInsertSchema(pointersTable);
 export const selectPointerSchema = createSelectSchema(pointersTable);
+
+export const translationsTable = sqliteTable(
+  "translations",
+  {
+    id: int().primaryKey({ autoIncrement: true }),
+    synsetOffset: text("synset_offset")
+      .notNull()
+      .references(() => synsetsTable.synsetOffset, { onDelete: "cascade" }),
+    languageCode: text("language_code").notNull(),
+    translatedGloss: text("translated_gloss").notNull(),
+    createdAt: int("created_at").notNull(),
+  },
+  (table) => [
+    index("idx_translations_synset_lang").on(
+      table.synsetOffset,
+      table.languageCode,
+    ),
+  ],
+);
+
+export const insertTranslationSchema = createInsertSchema(translationsTable);
+export const selectTranslationSchema = createSelectSchema(translationsTable);

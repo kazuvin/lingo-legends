@@ -15,6 +15,13 @@
       "when": 1759641697720,
       "tag": "0001_talented_reaper",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1760780426048,
+      "tag": "0002_mature_stephen_strange",
+      "breakpoints": true
     }
   ]
 }

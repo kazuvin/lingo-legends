@@ -9,7 +9,8 @@
     "migrate:remote": "wrangler d1 migrations apply lingo-legends-db --remote",
     "seed:wordnet": "tsx src/db/seed-wordnet.ts",
     "dump:wordnet": "tsx src/db/dump-wordnet.ts",
-    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@lingo-legends/shared": "workspace:*",
@@ -25,6 +26,7 @@
     "better-sqlite3": "^12.4.1",
     "drizzle-kit": "^0.31.5",
     "tsx": "^4.20.6",
+    "typescript": "^5.7.3",
     "wrangler": "^4.4.0"
   }
 }

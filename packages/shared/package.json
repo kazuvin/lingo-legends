@@ -6,7 +6,8 @@
     "typespec:compile": "tsp compile typespec",
     "typespec:watch": "tsp compile typespec --watch",
     "orval": "orval",
-    "generate": "pnpm typespec:compile && pnpm orval"
+    "generate": "pnpm typespec:compile && pnpm orval",
+    "swagger": "node swagger-server.js"
   },
   "exports": {
     "./generated/zod": "./generated/zod.ts",
@@ -19,13 +20,19 @@
   },
   "devDependencies": {
     "@tanstack/react-query": "^5.90.2",
+    "@types/express": "^5.0.3",
+    "@types/js-yaml": "^4.0.9",
+    "@types/swagger-ui-express": "^4.1.8",
     "@typespec/compiler": "^1.4.0",
     "@typespec/http": "^1.4.0",
     "@typespec/openapi3": "^1.4.0",
     "@typespec/rest": "^0.74.0",
     "@typespec/versioning": "^0.74.0",
+    "express": "^5.1.0",
+    "js-yaml": "^4.1.0",
     "orval": "^7.13.1",
     "prettier": "^3.6.2",
+    "swagger-ui-express": "^5.0.1",
     "typescript": "^5.7.3",
     "vite": "^6.3.5"
   }

@@ -39,6 +39,24 @@ paths:
           schema:
             $ref: '#/components/schemas/LexFileNum'
           explode: false
+        - name: lang
+          in: query
+          required: false
+          schema:
+            type: string
+          explode: false
+        - name: lemma
+          in: query
+          required: false
+          schema:
+            type: string
+          explode: false
+        - name: exact
+          in: query
+          required: false
+          schema:
+            type: boolean
+          explode: false
       responses:
         '200':
           description: The request has succeeded.

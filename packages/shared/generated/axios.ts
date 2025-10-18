@@ -133,6 +133,9 @@ export type WordsGetWordsParams = {
   count?: number;
   pos?: PosCode;
   lexFileNum?: LexFileNum;
+  lang?: string;
+  lemma?: string;
+  exact?: boolean;
 };
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];

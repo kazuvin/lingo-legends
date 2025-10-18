@@ -139,5 +139,8 @@ namespace Words {
     @query count?: int32,
     @query pos?: PosCode,
     @query lexFileNum?: LexFileNum,
+    @query lang?: string,
+    @query lemma?: string,
+    @query exact?: boolean,
   ): WordsResponse;
 }

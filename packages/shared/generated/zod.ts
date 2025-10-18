@@ -60,6 +60,9 @@ export const wordsGetWordsQueryParams = zod.object({
       zod.literal(44),
     ])
     .optional(),
+  lang: zod.string().optional(),
+  lemma: zod.string().optional(),
+  exact: zod.boolean().optional(),
 });
 
 export const wordsGetWordsResponse = zod.object({
