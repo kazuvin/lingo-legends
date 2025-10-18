@@ -65,6 +65,54 @@ body {
   }
 }
 
+/* Global modern scrollbar styles */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(71.4% 0.011 264 / 0.4) transparent;
+}
+
+*::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: oklch(71.4% 0.011 264 / 0.3);
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 0 0 oklch(71.4% 0.011 264 / 0);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: oklch(71.4% 0.011 264 / 0.5);
+  box-shadow: 0 0 8px 2px oklch(71.4% 0.011 264 / 0.3);
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Dark mode global scrollbar */
+@media (prefers-color-scheme: dark) {
+  * {
+    scrollbar-color: oklch(40% 0.01 264 / 0.5) transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: oklch(40% 0.01 264 / 0.4);
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: oklch(50% 0.01 264 / 0.7);
+  }
+}
+
 /* Custom scrollbar styles */
 .scrollbar-thin {
   scrollbar-width: thin;

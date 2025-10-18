@@ -127,3 +127,11 @@ export const translationsTable = sqliteTable(
 
 export const insertTranslationSchema = createInsertSchema(translationsTable);
 export const selectTranslationSchema = createSelectSchema(translationsTable);
+
+export const uniqueLemmasTable = sqliteTable("unique_lemmas", {
+  id: int().primaryKey({ autoIncrement: true }),
+  lemma: text().notNull().unique(),
+});
+
+export const insertUniqueLemmaSchema = createInsertSchema(uniqueLemmasTable);
+export const selectUniqueLemmaSchema = createSelectSchema(uniqueLemmasTable);

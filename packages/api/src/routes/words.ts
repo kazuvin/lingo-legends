@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import { validator } from "hono/validator";
-import { sql, eq, inArray, like } from "drizzle-orm";
+import { sql, eq, inArray, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
-import { wordsTable, synsetsTable, pointersTable } from "../db/schema";
+import { wordsTable, synsetsTable, pointersTable, uniqueLemmasTable } from "../db/schema";
 import {
   wordsGetWordsQueryParams,
   wordsGetWordsResponse,
@@ -53,92 +53,72 @@ app.get(
 
     const db = drizzle(c.env.DB);
 
-    // lemma フィルタ条件を作成
-    const getLemmaCondition = (lemmaValue: string) => {
-      return exact
-        ? eq(wordsTable.lemma, lemmaValue)
-        : sql`${wordsTable.lemma} LIKE ${'%' + lemmaValue + '%'}`;
-    };
-
-    let words;
+    // Step 1: 対象となる lemma のリストを取得
+    let targetLemmas: string[] = [];
 
     if (random) {
-      // ランダム取得
+      // ランダムに lemma を選択（unique_lemmas テーブルから高速取得）
       const randomCount = count ?? 10;
-      let query = db
-        .select({
-          id: wordsTable.id,
-          lemma: wordsTable.lemma,
-          synsetOffset: wordsTable.synsetOffset,
-          posCode: wordsTable.posCode,
-          gloss: synsetsTable.gloss,
-          lexFileNum: synsetsTable.lexFileNum,
-        })
-        .from(wordsTable)
-        .innerJoin(
-          synsetsTable,
-          eq(wordsTable.synsetOffset, synsetsTable.synsetOffset),
-        );
-
-      if (lemma) {
-        query = query.where(getLemmaCondition(lemma)) as any;
-      }
-
-      words = await query
+      const randomLemmas = await db
+        .select({ lemma: uniqueLemmasTable.lemma })
+        .from(uniqueLemmasTable)
         .orderBy(sql`RANDOM()`)
         .limit(randomCount)
         .all();
+      targetLemmas = randomLemmas.map((row) => row.lemma);
     } else if (ids) {
-      // ID指定取得
-      words = await db
-        .select({
-          id: wordsTable.id,
-          lemma: wordsTable.lemma,
-          synsetOffset: wordsTable.synsetOffset,
-          posCode: wordsTable.posCode,
-          gloss: synsetsTable.gloss,
-          lexFileNum: synsetsTable.lexFileNum,
-        })
+      // 指定された ID から lemma を取得
+      const lemmasFromIds = await db
+        .selectDistinct({ lemma: wordsTable.lemma })
         .from(wordsTable)
-        .innerJoin(
-          synsetsTable,
-          eq(wordsTable.synsetOffset, synsetsTable.synsetOffset),
-        )
         .where(inArray(wordsTable.id, ids))
         .all();
+      targetLemmas = lemmasFromIds.map((row) => row.lemma);
     } else if (lemma) {
-      // lemma検索
-      // D1の制限を考慮して、countが指定されていない場合は100件に制限
+      // lemma 検索
       const lemmaCount = count ?? 100;
-      console.log(`Searching for lemma: "${lemma}", exact: ${exact}, count: ${lemmaCount}`);
-      words = await db
-        .select({
-          id: wordsTable.id,
-          lemma: wordsTable.lemma,
-          synsetOffset: wordsTable.synsetOffset,
-          posCode: wordsTable.posCode,
-          gloss: synsetsTable.gloss,
-          lexFileNum: synsetsTable.lexFileNum,
-        })
+      const lemmaCondition = exact
+        ? eq(wordsTable.lemma, lemma)
+        : sql`${wordsTable.lemma} LIKE ${'%' + lemma + '%'}`;
+
+      const lemmasFromSearch = await db
+        .selectDistinct({ lemma: wordsTable.lemma })
         .from(wordsTable)
-        .innerJoin(
-          synsetsTable,
-          eq(wordsTable.synsetOffset, synsetsTable.synsetOffset),
-        )
-        .where(getLemmaCondition(lemma))
+        .where(lemmaCondition)
         .limit(lemmaCount)
         .all();
-      console.log(`Found ${words.length} words:`, words.map(w => w.lemma).join(', '));
+      targetLemmas = lemmasFromSearch.map((row) => row.lemma);
     } else {
       return c.json({ words: [], count: 0 });
     }
 
-    if (words.length === 0) {
-      console.log("Returning empty result");
+    if (targetLemmas.length === 0) {
       return c.json({ words: [], count: 0 });
     }
 
-    // 2. 全ての関連語を一度に取得
+    // Step 2: 選択された lemma の全ての意味を取得
+    const words = await db
+      .select({
+        id: wordsTable.id,
+        lemma: wordsTable.lemma,
+        synsetOffset: wordsTable.synsetOffset,
+        posCode: wordsTable.posCode,
+        gloss: synsetsTable.gloss,
+        lexFileNum: synsetsTable.lexFileNum,
+      })
+      .from(wordsTable)
+      .innerJoin(
+        synsetsTable,
+        eq(wordsTable.synsetOffset, synsetsTable.synsetOffset),
+      )
+      .where(inArray(wordsTable.lemma, targetLemmas))
+      .all();
+
+    if (words.length === 0) {
+      return c.json({ words: [], count: 0 });
+    }
+
+    // Step 3: 全ての関連語を一度に取得
     const synsetOffsets = words.map((w) => w.synsetOffset);
     const allRelations = await db
       .select({
@@ -161,7 +141,7 @@ app.get(
       )
       .all();
 
-    // 3. メモリ上でグループ化
+    // メモリ上でグループ化
     const relationsByOffset = new Map<string, typeof allRelations>();
     for (const rel of allRelations) {
       if (!relationsByOffset.has(rel.sourceSynsetOffset)) {
@@ -170,7 +150,7 @@ app.get(
       relationsByOffset.get(rel.sourceSynsetOffset)!.push(rel);
     }
 
-    // 4. lemma でグルーピング
+    // Step 4: lemma でグルーピング
     const groupedByLemma = new Map<string, typeof words>();
     for (const word of words) {
       if (!groupedByLemma.has(word.lemma)) {
@@ -179,7 +159,7 @@ app.get(
       groupedByLemma.get(word.lemma)!.push(word);
     }
 
-    // 5. レスポンス構築（翻訳を適用）
+    // Step 5: レスポンス構築（翻訳を適用）
     const wordResponses = await Promise.all(
       Array.from(groupedByLemma.entries()).map(async ([lemma, meanings]) => {
         // 各意味を処理
