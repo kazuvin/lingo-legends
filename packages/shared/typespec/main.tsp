@@ -114,14 +114,19 @@ model WordRelation {
   sourceTarget: string;
 }
 
-// Word Model
-model Word {
+// Word Meaning Model (individual meaning/synset)
+model WordMeaning {
   id: int32;
-  lemma: string;
   gloss: string;
   posCode: PosCode;
   lexFileNum: LexFileNum;
   relations: WordRelation[];
+}
+
+// Word Model (grouped by lemma)
+model Word {
+  lemma: string;
+  meanings: WordMeaning[];
 }
 
 // Words Response Model

@@ -170,30 +170,48 @@ app.get(
       relationsByOffset.get(rel.sourceSynsetOffset)!.push(rel);
     }
 
-    // 4. レスポンス構築（翻訳を適用）
+    // 4. lemma でグルーピング
+    const groupedByLemma = new Map<string, typeof words>();
+    for (const word of words) {
+      if (!groupedByLemma.has(word.lemma)) {
+        groupedByLemma.set(word.lemma, []);
+      }
+      groupedByLemma.get(word.lemma)!.push(word);
+    }
+
+    // 5. レスポンス構築（翻訳を適用）
     const wordResponses = await Promise.all(
-      words.map(async (word) => {
-        const translatedGloss = await translateGloss(
-          word.synsetOffset,
-          word.gloss || "",
-          lang,
-          c.env,
+      Array.from(groupedByLemma.entries()).map(async ([lemma, meanings]) => {
+        // 各意味を処理
+        const meaningResponses = await Promise.all(
+          meanings.map(async (meaning) => {
+            const translatedGloss = await translateGloss(
+              meaning.synsetOffset,
+              meaning.gloss || "",
+              lang,
+              c.env,
+            );
+
+            return {
+              id: meaning.id,
+              gloss: translatedGloss,
+              posCode: meaning.posCode as any,
+              lexFileNum: meaning.lexFileNum as any,
+              relations: (
+                relationsByOffset.get(meaning.synsetOffset) || []
+              ).map((rel) => ({
+                id: rel.targetId,
+                lemma: rel.targetLemma,
+                pointerSymbol: rel.pointerSymbol as any,
+                sourceTarget: rel.sourceTarget || "",
+              })),
+            };
+          }),
         );
 
         return {
-          id: word.id,
-          lemma: word.lemma,
-          gloss: translatedGloss,
-          posCode: word.posCode as any,
-          lexFileNum: word.lexFileNum as any,
-          relations: (relationsByOffset.get(word.synsetOffset) || []).map(
-            (rel) => ({
-              id: rel.targetId,
-              lemma: rel.targetLemma,
-              pointerSymbol: rel.pointerSymbol as any,
-              sourceTarget: rel.sourceTarget || "",
-            }),
-          ),
+          lemma,
+          meanings: meaningResponses,
         };
       }),
     );

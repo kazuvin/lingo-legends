@@ -121,8 +121,12 @@ export const Versions = {
 } as const;
 
 export interface Word {
-  id: number;
   lemma: string;
+  meanings: WordMeaning[];
+}
+
+export interface WordMeaning {
+  id: number;
   gloss: string;
   posCode: PosCode;
   lexFileNum: LexFileNum;

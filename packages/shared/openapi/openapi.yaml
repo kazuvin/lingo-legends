@@ -158,8 +158,19 @@ components:
     Word:
       type: object
       required:
-        - id
         - lemma
+        - meanings
+      properties:
+        lemma:
+          type: string
+        meanings:
+          type: array
+          items:
+            $ref: '#/components/schemas/WordMeaning'
+    WordMeaning:
+      type: object
+      required:
+        - id
         - gloss
         - posCode
         - lexFileNum
@@ -168,8 +179,6 @@ components:
         id:
           type: integer
           format: int32
-        lemma:
-          type: string
         gloss:
           type: string
         posCode:

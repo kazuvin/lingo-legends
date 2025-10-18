@@ -14,7 +14,7 @@ export default function Dashboard() {
     <div className="p-6 lg:px-8">
       <div className="grid grid-cols-6 gap-4">
         {(data?.words || []).map((word) => (
-          <LegendCard key={word.id} word={word} />
+          <LegendCard key={word.lemma} word={word} />
         ))}
       </div>
     </div>
