@@ -41,7 +41,7 @@ app.get(
       ? result.data.ids.split(",").map(Number)
       : undefined;
     const random = result.data.random === true;
-    const count = result.data.count ?? 10;
+    const count = result.data.count;
     const lang = result.data.lang || "en";
     const lemma = result.data.lemma;
     const exact = result.data.exact === true;
@@ -57,13 +57,14 @@ app.get(
     const getLemmaCondition = (lemmaValue: string) => {
       return exact
         ? eq(wordsTable.lemma, lemmaValue)
-        : like(wordsTable.lemma, `%${lemmaValue}%`);
+        : sql`${wordsTable.lemma} LIKE ${'%' + lemmaValue + '%'}`;
     };
 
     let words;
 
     if (random) {
       // ランダム取得
+      const randomCount = count ?? 10;
       let query = db
         .select({
           id: wordsTable.id,
@@ -85,7 +86,7 @@ app.get(
 
       words = await query
         .orderBy(sql`RANDOM()`)
-        .limit(count)
+        .limit(randomCount)
         .all();
     } else if (ids) {
       // ID指定取得
@@ -107,6 +108,9 @@ app.get(
         .all();
     } else if (lemma) {
       // lemma検索
+      // D1の制限を考慮して、countが指定されていない場合は100件に制限
+      const lemmaCount = count ?? 100;
+      console.log(`Searching for lemma: "${lemma}", exact: ${exact}, count: ${lemmaCount}`);
       words = await db
         .select({
           id: wordsTable.id,
@@ -122,13 +126,15 @@ app.get(
           eq(wordsTable.synsetOffset, synsetsTable.synsetOffset),
         )
         .where(getLemmaCondition(lemma))
-        .limit(count)
+        .limit(lemmaCount)
         .all();
+      console.log(`Found ${words.length} words:`, words.map(w => w.lemma).join(', '));
     } else {
       return c.json({ words: [], count: 0 });
     }
 
     if (words.length === 0) {
+      console.log("Returning empty result");
       return c.json({ words: [], count: 0 });
     }
 
