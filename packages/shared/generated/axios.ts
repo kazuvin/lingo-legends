@@ -128,18 +128,18 @@ export interface WordsResponse {
 }
 
 export type WordsGetWordsParams = {
-  ids: string;
-};
-
-export type WordsGetRandomParams = {
-  count?: string;
+  ids?: string;
+  random?: boolean;
+  count?: number;
+  pos?: PosCode;
+  lexFileNum?: LexFileNum;
 };
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 export const getLingoLegendsAPI = () => {
   const wordsGetWords = (
-    params: WordsGetWordsParams,
+    params?: WordsGetWordsParams,
     options?: SecondParameter<typeof customInstance<WordsResponse>>,
   ) => {
     return customInstance<WordsResponse>(
@@ -148,21 +148,8 @@ export const getLingoLegendsAPI = () => {
     );
   };
 
-  const wordsGetRandom = (
-    params?: WordsGetRandomParams,
-    options?: SecondParameter<typeof customInstance<WordsResponse>>,
-  ) => {
-    return customInstance<WordsResponse>(
-      { url: `/words/random`, method: "GET", params },
-      options,
-    );
-  };
-
-  return { wordsGetWords, wordsGetRandom };
+  return { wordsGetWords };
 };
 export type WordsGetWordsResult = NonNullable<
   Awaited<ReturnType<ReturnType<typeof getLingoLegendsAPI>["wordsGetWords"]>>
->;
-export type WordsGetRandomResult = NonNullable<
-  Awaited<ReturnType<ReturnType<typeof getLingoLegendsAPI>["wordsGetRandom"]>>
 >;

@@ -142,17 +142,17 @@ export interface WordsResponse {
 }
 
 export type WordsGetWordsParams = {
-  ids: string;
-};
-
-export type WordsGetRandomParams = {
-  count?: string;
+  ids?: string;
+  random?: boolean;
+  count?: number;
+  pos?: PosCode;
+  lexFileNum?: LexFileNum;
 };
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 export const wordsGetWords = (
-  params: WordsGetWordsParams,
+  params?: WordsGetWordsParams,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
@@ -170,7 +170,7 @@ export const getWordsGetWordsQueryOptions = <
   TData = Awaited<ReturnType<typeof wordsGetWords>>,
   TError = ErrorType<unknown>,
 >(
-  params: WordsGetWordsParams,
+  params?: WordsGetWordsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof wordsGetWords>>, TError, TData>
@@ -202,7 +202,7 @@ export function useWordsGetWords<
   TData = Awaited<ReturnType<typeof wordsGetWords>>,
   TError = ErrorType<unknown>,
 >(
-  params: WordsGetWordsParams,
+  params: undefined | WordsGetWordsParams,
   options: {
     query: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof wordsGetWords>>, TError, TData>
@@ -225,7 +225,7 @@ export function useWordsGetWords<
   TData = Awaited<ReturnType<typeof wordsGetWords>>,
   TError = ErrorType<unknown>,
 >(
-  params: WordsGetWordsParams,
+  params?: WordsGetWordsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof wordsGetWords>>, TError, TData>
@@ -248,7 +248,7 @@ export function useWordsGetWords<
   TData = Awaited<ReturnType<typeof wordsGetWords>>,
   TError = ErrorType<unknown>,
 >(
-  params: WordsGetWordsParams,
+  params?: WordsGetWordsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof wordsGetWords>>, TError, TData>
@@ -264,7 +264,7 @@ export function useWordsGetWords<
   TData = Awaited<ReturnType<typeof wordsGetWords>>,
   TError = ErrorType<unknown>,
 >(
-  params: WordsGetWordsParams,
+  params?: WordsGetWordsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof wordsGetWords>>, TError, TData>
@@ -276,142 +276,6 @@ export function useWordsGetWords<
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
   const queryOptions = getWordsGetWordsQueryOptions(params, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey;
-
-  return query;
-}
-
-export const wordsGetRandom = (
-  params?: WordsGetRandomParams,
-  options?: SecondParameter<typeof customInstance>,
-  signal?: AbortSignal,
-) => {
-  return customInstance<WordsResponse>(
-    { url: `/words/random`, method: "GET", params, signal },
-    options,
-  );
-};
-
-export const getWordsGetRandomQueryKey = (params?: WordsGetRandomParams) => {
-  return [`/words/random`, ...(params ? [params] : [])] as const;
-};
-
-export const getWordsGetRandomQueryOptions = <
-  TData = Awaited<ReturnType<typeof wordsGetRandom>>,
-  TError = ErrorType<unknown>,
->(
-  params?: WordsGetRandomParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof wordsGetRandom>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey = queryOptions?.queryKey ?? getWordsGetRandomQueryKey(params);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof wordsGetRandom>>> = ({
-    signal,
-  }) => wordsGetRandom(params, requestOptions, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof wordsGetRandom>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type WordsGetRandomQueryResult = NonNullable<
-  Awaited<ReturnType<typeof wordsGetRandom>>
->;
-export type WordsGetRandomQueryError = ErrorType<unknown>;
-
-export function useWordsGetRandom<
-  TData = Awaited<ReturnType<typeof wordsGetRandom>>,
-  TError = ErrorType<unknown>,
->(
-  params: undefined | WordsGetRandomParams,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof wordsGetRandom>>, TError, TData>
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof wordsGetRandom>>,
-          TError,
-          Awaited<ReturnType<typeof wordsGetRandom>>
-        >,
-        "initialData"
-      >;
-    request?: SecondParameter<typeof customInstance>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useWordsGetRandom<
-  TData = Awaited<ReturnType<typeof wordsGetRandom>>,
-  TError = ErrorType<unknown>,
->(
-  params?: WordsGetRandomParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof wordsGetRandom>>, TError, TData>
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof wordsGetRandom>>,
-          TError,
-          Awaited<ReturnType<typeof wordsGetRandom>>
-        >,
-        "initialData"
-      >;
-    request?: SecondParameter<typeof customInstance>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useWordsGetRandom<
-  TData = Awaited<ReturnType<typeof wordsGetRandom>>,
-  TError = ErrorType<unknown>,
->(
-  params?: WordsGetRandomParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof wordsGetRandom>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function useWordsGetRandom<
-  TData = Awaited<ReturnType<typeof wordsGetRandom>>,
-  TError = ErrorType<unknown>,
->(
-  params?: WordsGetRandomParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof wordsGetRandom>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getWordsGetRandomQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,

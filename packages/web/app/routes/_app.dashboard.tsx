@@ -1,9 +1,10 @@
-import { useWordsGetRandom } from '@lingo-legends/shared/generated/react-query';
+import { useWordsGetWords } from '@lingo-legends/shared/generated/react-query';
 import { LegendCard } from '~/components/game/legend-card';
 
 export default function Dashboard() {
-  const { data, isLoading, error } = useWordsGetRandom({
-    count: '12',
+  const { data, isLoading, error } = useWordsGetWords({
+    random: true,
+    count: 12,
   });
 
   if (isLoading) return null;

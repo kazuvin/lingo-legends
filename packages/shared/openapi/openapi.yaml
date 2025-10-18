@@ -10,26 +10,34 @@ paths:
       parameters:
         - name: ids
           in: query
-          required: true
+          required: false
           schema:
             type: string
           explode: false
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WordsResponse'
-  /words/random:
-    get:
-      operationId: Words_getRandom
-      parameters:
+        - name: random
+          in: query
+          required: false
+          schema:
+            type: boolean
+          explode: false
         - name: count
           in: query
           required: false
           schema:
-            type: string
+            type: integer
+            format: int32
+          explode: false
+        - name: pos
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/PosCode'
+          explode: false
+        - name: lexFileNum
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/LexFileNum'
           explode: false
       responses:
         '200':

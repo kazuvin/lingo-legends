@@ -1,7 +1,6 @@
 import { Hono } from "hono";
 
 import words from "./routes/words";
-import wordsRandom from "./routes/words.random";
 import { cors } from "hono/cors";
 
 const app = new Hono();
@@ -18,7 +17,6 @@ app.use(
   }),
 );
 
-// app.route("/words", words);
-app.route("/words/random", wordsRandom);
+app.route("/words", words);
 
 export default app;

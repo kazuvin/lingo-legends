@@ -134,12 +134,10 @@ model WordsResponse {
 namespace Words {
   @get
   op getWords(
-    @query ids: string,
-  ): WordsResponse;
-
-  @route("/random")
-  @get
-  op getRandom(
-    @query count?: string,
+    @query ids?: string,
+    @query random?: boolean,
+    @query count?: int32,
+    @query pos?: PosCode,
+    @query lexFileNum?: LexFileNum,
   ): WordsResponse;
 }
